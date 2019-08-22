@@ -25,11 +25,4 @@ public class Calculator extends OptimizedCalculator {
         calculate(this.left + this.operator.toString() + this.right);
     }
 
-    private Long parseLong(String value) {
-        try {
-            return Long.parseLong(value);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Expected whole number but got: " + value);
-        }
-    }
 }

@@ -6,7 +6,7 @@ public enum Operator {
     // valid values for operator are: "+", "-", "*", "/"
     ADD("+"),
     SUBTRACT("-"),
-    MUTIPLY("*"),
+    MULTIPLY("*"),
     DIVIDE("/");
 
     private String symbol;

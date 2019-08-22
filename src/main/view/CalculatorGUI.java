@@ -1,3 +1,5 @@
+package view;
+
 import controller.CalculatorController;
 import model.Operator;
 
@@ -24,18 +26,27 @@ public class CalculatorGUI {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         f.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-        f.setLayout(new GridLayout(1, 2));
+
+        // PANELS
 
         JPanel calculatorPanel = new JPanel();
         JPanel viewPanel = new JPanel();
         JPanel buttonsPanel = new JPanel();
-        JPanel pastResultsPanel = new JPanel();
+        JPanel resultAndHistoryPanel = new JPanel();
+
+        calculatorPanel.setLayout(new BoxLayout(calculatorPanel, BoxLayout.Y_AXIS));
+        viewPanel.setLayout(new GridLayout(2, 1));
 
         calculatorPanel.add(viewPanel);
         calculatorPanel.add(buttonsPanel);
 
+        // TEXT FIELDS/AREAS
+        resultText = new JTextField();
+        resultAndHistoryPanel.add(resultText);
+        resultText.setColumns(30);
+        resultText.setEditable(false);
+
         pastResultsText = new JTextArea();
-        pastResultsPanel.add(pastResultsText);
 
         equationText = new JTextField();
         viewPanel.add(equationText);
@@ -43,12 +54,9 @@ public class CalculatorGUI {
         equationText.setColumns(30);
         equationText.setEditable(false);
 
-        resultText = new JTextField();
-        viewPanel.add(resultText);
-        resultText.setColumns(30);
-        resultText.setEditable(false);
+        viewPanel.add(resultAndHistoryPanel);
 
-        calculatorPanel.setLayout(new BoxLayout(calculatorPanel, BoxLayout.Y_AXIS));
+        // BUTTONS
 
         JButton b0 = new JButton("0");
         JButton b1 = new JButton("1");
@@ -64,8 +72,11 @@ public class CalculatorGUI {
         JButton addButton = new JButton(Operator.ADD.toString());
         JButton subtractButton = new JButton(Operator.SUBTRACT.toString());
         JButton divideButton = new JButton(Operator.DIVIDE.toString());
-        JButton multiplyButton = new JButton(Operator.MUTIPLY.toString());
+        JButton multiplyButton = new JButton(Operator.MULTIPLY.toString());
         JButton equalsButton = new JButton("=");
+
+        JButton pastResultsButton = new JButton("History");
+        resultAndHistoryPanel.add(pastResultsButton);
 
         buttonsPanel.setLayout(new GridLayout(3, 5));
 
@@ -103,7 +114,6 @@ public class CalculatorGUI {
         buttonsPanel.add(equalsButton);
 
         f.add(calculatorPanel);
-        f.add(pastResultsPanel);
 
         f.pack();
 
@@ -130,6 +140,13 @@ public class CalculatorGUI {
             } finally {
                 equationText.setText("");
             }
+        }
+    }
+
+    private static class ShowHistoryAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            
         }
     }
 }
