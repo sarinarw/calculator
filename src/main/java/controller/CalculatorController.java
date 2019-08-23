@@ -16,7 +16,7 @@ public class CalculatorController {
         this.calculator = new OptimizedCalculator();
     }
 
-    public Long calculate(String equation) {
+    public Double calculate(String equation) {
         this.calculator.calculate(equation);
         return this.calculator.getResult();
     }

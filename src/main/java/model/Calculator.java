@@ -2,23 +2,23 @@ package model;
 
 public class Calculator extends OptimizedCalculator {
 
-    private Long left;
-    private Long right;
+    private Double left;
+    private Double right;
     private Operator operator;
 
     public Calculator(String left, String right, String operator) {
-        this.left = parseLong(left);
-        this.right = parseLong(right);
+        this.left = parseDouble(left);
+        this.right = parseDouble(right);
         this.operator = Operator.getBySymbol(operator)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid operator: " + operator));
     }
 
     public void setLeft(String value) {
-        this.left = parseLong(value);
+        this.left = parseDouble(value);
     }
 
     public void setRight(String value) {
-        this.right = parseLong(value);
+        this.right = parseDouble(value);
     }
 
     public void calculate() {

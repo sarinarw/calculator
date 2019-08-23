@@ -11,7 +11,8 @@ import java.io.File;
 
 public class CalculatorGUI {
 
-    private static JTextField equationText, resultText;
+    private static JTextField equationText;
+    private static JTextArea resultText;
     private static JComboBox<String> pastResults;
 
     private static CalculatorController calculator = new CalculatorController();
@@ -52,7 +53,7 @@ public class CalculatorGUI {
 
         // TEXT FIELDS/AREAS
 
-        resultText = new JTextField();
+        resultText = new JTextArea();
         resultAndHistoryPanel.add(resultText);
         resultText.setColumns(30);
         resultText.setEditable(false);
@@ -161,7 +162,7 @@ public class CalculatorGUI {
             }
             try {
                 // process the equation and update the result text
-                Long result = calculator.calculate(equationText.getText());
+                Double result = calculator.calculate(equationText.getText());
                 resultText.setText(String.valueOf(result));
 
                 // update the previous results dropdown list

@@ -11,8 +11,8 @@ public class OptimizedCalculator {
 
     private ArrayList<Operator> supportedOperators = new ArrayList<>();
 
-    Long currentResult = null;
-    LinkedList<Long> historicalCalculations = new LinkedList<>();
+    Double currentResult = null;
+    LinkedList<Double> historicalCalculations = new LinkedList<>();
 
     public OptimizedCalculator() {
         // Order here matters. The Operators are added to this list in opposite preferential order.
@@ -41,13 +41,13 @@ public class OptimizedCalculator {
         for (Operator o : supportedOperators) {
             regex.append(Pattern.quote(o.toString()));
         }
-        regex.append("0-9_]+$");
+        regex.append(".E0-9_]+$");
         if (!equation.matches(regex.toString())) {
-            throw new IllegalArgumentException("Equation must contain only support operators and whole numbers: " + equation);
+            throw new IllegalArgumentException("Invalid equation: " + equation);
         }
 
         // do the actual processing of the equation
-        Long result = calculateHelperV2(equation);
+        Double result = calculateHelperV2(equation);
         if (result == null) {
             throw new IllegalArgumentException("Could not produce a result for the given equation: " + equation);
         }
@@ -55,26 +55,33 @@ public class OptimizedCalculator {
         currentResult = result;
     }
 
-    private Long calculateHelperV2(String equation) {
+    private Double calculateHelperV2(String equation) {
 
         if (equation.length() == 0) {
             throw new IllegalArgumentException("Equation string must not be empty");
         }
-
         // replace subtraction symbols by saying we are adding the left value to a negative right value
+        // and double subtraction symbols with addition
         // do not replace if the subtraction symbol is proceeds another operator already
-        // i.e. 1-1 -> 1+-1 but 1+-1 -> 1+-1
+        // i.e. 1-1 -> 1+-1, 1+-1 -> 1+-1, 1--1 -> 1+1
         StringBuilder updatedEquation = new StringBuilder();
 
         updatedEquation.append(equation.charAt(0));
-        for (int i = 1; i < equation.length(); i++) {
+
+        for (int i = 1; i < equation.length() - 1; i++) {
             if (String.valueOf(equation.charAt(i)).equals(Operator.SUBTRACT.toString())
                     && Character.isDigit(equation.charAt(i - 1))) {
                 updatedEquation.append(Operator.ADD.toString());
+                // check for double subtraction signs, which we want to replace with an addition symbol and move on
+                if (String.valueOf(equation.charAt(i + 1)).equals(Operator.SUBTRACT.toString())) {
+                    i++;
+                    continue;
+                }
             }
             updatedEquation.append(equation.charAt(i));
-
         }
+
+        updatedEquation.append(equation.charAt(equation.length() - 1));
 
         equation = updatedEquation.toString();
 
@@ -111,7 +118,7 @@ public class OptimizedCalculator {
             equation = updateEquation(equation, index, Operator.ADD, operators);
         }
 
-        return Long.parseLong(equation);
+        return Double.parseDouble(equation);
     }
 
     private String updateEquation(String equation, int index, Operator op, HashSet<String> operators) {
@@ -119,7 +126,7 @@ public class OptimizedCalculator {
         String left = getLeft(equation, index, operators);
         String right = getRight(equation, index, operators);
 
-        Long result = doOperation(parseLong(left), parseLong(right), op);
+        Double result = doOperation(parseDouble(left), parseDouble(right), op);
         equation = equation.replaceFirst(Pattern.quote(left + op.toString() + right), String.valueOf(result));
 
         return equation;
@@ -146,18 +153,18 @@ public class OptimizedCalculator {
         return right.toString();
     }
 
-    private Long doOperation(long left, long right, Operator op) {
-        Long result = null;
+    private Double doOperation(Double left, Double right, Operator op) {
+        Double result;
             switch (op) {
                 case ADD:
                     result = left + right;
-                    if ((left > 0 && right > 0 && result <= 0) || (left < 0 && right < 0 && result >= 0)) {
+                    if (result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY) {
                         throw new ArithmeticException(left + " and " + right + " cannot be added as it causes overflow");
                     }
                     break;
-                case SUBTRACT:
+                case SUBTRACT: // this should never actually be hit because we replaced all - with +- and -- with +
                     result = left - right;
-                    if ((left > 0 && right < 0 && result <= 0) || (left < 0 && right > 0 && result >= 0)) {
+                    if (result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY) {
                         throw new ArithmeticException(left + " cannot subtract " + right + " as it causes overflow");
                     }
                     break;
@@ -167,12 +174,14 @@ public class OptimizedCalculator {
                         throw new ArithmeticException(left + " and " + right + " cannot be multiplied as it causes overflow");
                     }
                     break;
-                case DIVIDE: // we only support operations on whole numbers therefore overflow with division cannot happen
+                case DIVIDE:
                     if (right == 0) {
                         throw new ArithmeticException("Division by zero is invalid: " + left + op.toString() + right);
                     }
-
                     result = left / right;
+                    if (result * right != left) {
+                        throw new ArithmeticException(left + " cannot be divided by " + right + " as it causes overflow");
+                    }
                     break;
                 default:
                     throw new IllegalArgumentException("Calculations not supported on operator: " + op);
@@ -180,11 +189,11 @@ public class OptimizedCalculator {
             return result;
         }
 
-    public LinkedList<Long> getPreviousResults() {
+    public LinkedList<Double> getPreviousResults() {
         return this.historicalCalculations;
     }
 
-    public Long getPreviousResult(int index) {
+    public Double getPreviousResult(int index) {
         if (index > MAX_HISTORY || index < 1) {
             throw new IllegalArgumentException("Previous result index must be between 1 and " + MAX_HISTORY);
         }
@@ -196,13 +205,13 @@ public class OptimizedCalculator {
         return historicalCalculations.get(historicalCalculations.size() - index);
     }
 
-    public Long getResult() {
+    public Double getResult() {
         return currentResult;
     }
 
-    Long parseLong(String value) {
+    Double parseDouble(String value) {
         try {
-            return Long.parseLong(value);
+            return Double.parseDouble(value);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Expected whole number but got: " + value);
         }

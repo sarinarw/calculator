@@ -55,18 +55,25 @@ public class OptimizedCalculatorTest {
     @Test(expected = ArithmeticException.class)
     public void testAdditionOverflow() {
         OptimizedCalculator calculator = new OptimizedCalculator();
-        calculator.calculate(Long.MAX_VALUE + "+1");
+        calculator.calculate(Double.MAX_VALUE + "+" + Double.MAX_VALUE);
     }
 
     @Test(expected = ArithmeticException.class)
     public void testSubtractionOverflow() {
         OptimizedCalculator calculator = new OptimizedCalculator();
-        calculator.calculate(Long.MIN_VALUE + "-1");
+        calculator.calculate((-1 * Double.MAX_VALUE) + "-" + (1 * Double.MAX_VALUE));
     }
 
     @Test(expected = ArithmeticException.class)
     public void testMultiplicationOverflow() {
         OptimizedCalculator calculator = new OptimizedCalculator();
-        calculator.calculate(Long.MAX_VALUE + "*2");
+        calculator.calculate(Double.MAX_VALUE + "*2");
+    }
+
+    @Test(expected = ArithmeticException.class)
+    public void testDivisionOverflow() {
+        OptimizedCalculator calculator = new OptimizedCalculator();
+        calculator.calculate(Double.MAX_VALUE + "/0.2");
     }
 }
+
