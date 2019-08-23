@@ -5,6 +5,13 @@ import org.junit.Test;
 public class OptimizedCalculatorTest {
 
     @Test
+    public void testNoOperators() {
+        OptimizedCalculator calculator = new OptimizedCalculator();
+        calculator.calculate("6");
+        assert(6 == calculator.getResult());
+    }
+
+    @Test
     public void testSimpleOrderOfOperations() {
         OptimizedCalculator calculator = new OptimizedCalculator();
         calculator.calculate("1+2*5");
@@ -37,19 +44,52 @@ public class OptimizedCalculatorTest {
     }
 
     @Test
+    public void testSubtractingNegative() {
+        OptimizedCalculator calculator = new OptimizedCalculator();
+        calculator.calculate("2 - -3");
+        assert(5 == calculator.getResult());
+    }
+
+    @Test
     public void testGetPreviousResult() {
         OptimizedCalculator calculator = new OptimizedCalculator();
-        calculator.calculate("1 + 2 + 3");
-        calculator.calculate("0 + 1 - 0");
-        calculator.calculate("0 + 1 * 100");
-        assert(1 == calculator.getPreviousResult(1));
-        assert(2 == calculator.getPreviousResults().size());
+        for (int i = 0; i < calculator.MAX_HISTORY + 2; i++) {
+            calculator.calculate("" + i);
+        }
+        assert(calculator.MAX_HISTORY + 1 == calculator.getResult());
+        assert(calculator.MAX_HISTORY == calculator.getPreviousResult(1));
+        assert(1 == calculator.getPreviousResult(calculator.MAX_HISTORY));
+        assert(calculator.MAX_HISTORY == calculator.getPreviousResults().size());
+    }
+
+    @Test
+    public void testGetPreviousResultNonexistant() {
+        OptimizedCalculator calculator = new OptimizedCalculator();
+        assert(null == calculator.getPreviousResult(1));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetPreviousResultInvalidIndexSmall() {
+        OptimizedCalculator calculator = new OptimizedCalculator();
+        calculator.getPreviousResult(0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetPreviousResultInvalidIndexLarge() {
+        OptimizedCalculator calculator = new OptimizedCalculator();
+        calculator.getPreviousResult(calculator.MAX_HISTORY + 1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidEquation() {
         OptimizedCalculator calculator = new OptimizedCalculator();
-        calculator.calculate("1+2*5...");
+        calculator.calculate("fdafsafds");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEmptyEquation() {
+        OptimizedCalculator calculator = new OptimizedCalculator();
+        calculator.calculate("        ");
     }
 
     @Test(expected = ArithmeticException.class)

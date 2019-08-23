@@ -1,5 +1,12 @@
 package model;
 
+/**
+ * Calculator class to satisfy the single-part-only equation requirements in part 1.
+ * i.e. this Calculator can only do 1+1, 2-1, etc. NOT 1+1-2/5....
+ *
+ * Other than that, the historic tracking and supported numbers are shared with OptimizedCalculator,
+ * hence the extension of that class.
+ */
 public class Calculator extends OptimizedCalculator {
 
     private Double left;
