@@ -1,7 +1,7 @@
 # Calculator
 
 ## Setup
-This project was coded using Intellij. The build tool it uses is SBT. 
+This project uses the SBT build tool.
 If you do not already have SBT installed, refer to here: https://www.scala-sbt.org/download.html
 
 ## Running
