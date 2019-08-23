@@ -64,8 +64,6 @@ public class OptimizedCalculator {
         // replace subtraction symbols by saying we are adding the left value to a negative right value
         // do not replace if the subtraction symbol is proceeds another operator already
         // i.e. 1-1 -> 1+-1 but 1+-1 -> 1+-1
-        System.out.println("Parsing equation: " + equation);
-
         StringBuilder updatedEquation = new StringBuilder();
 
         updatedEquation.append(equation.charAt(0));
@@ -79,8 +77,6 @@ public class OptimizedCalculator {
         }
 
         equation = updatedEquation.toString();
-
-        System.out.println("Updated subtraction equation: " + equation);
 
         HashSet<String> operators = new HashSet<>();
         operators.add(Operator.ADD.toString());
@@ -125,9 +121,6 @@ public class OptimizedCalculator {
 
         Long result = doOperation(parseLong(left), parseLong(right), op);
         equation = equation.replaceFirst(Pattern.quote(left + op.toString() + right), String.valueOf(result));
-
-        System.out.println("Calculated: " + left + op.toString() + right + " = " + result);
-        System.out.println("Updated Equation: " + equation);
 
         return equation;
     }
