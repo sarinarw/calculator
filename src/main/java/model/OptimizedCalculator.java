@@ -131,7 +131,7 @@ public class OptimizedCalculator {
             equation = updateEquation(equation, index, Operator.ADD, operators);
         }
 
-        return Double.parseDouble(equation);
+        return parseDouble(equation);
     }
 
     private String updateEquation(String equation, int index, Operator op, HashSet<String> operators) {
@@ -217,10 +217,13 @@ public class OptimizedCalculator {
     }
 
     Double parseDouble(String value) {
+        if (value.isEmpty()) {
+            throw new IllegalArgumentException("Cannot parse empty string as number");
+        }
         try {
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Expected whole number but got: " + value);
+            throw new IllegalArgumentException("Expected number but got: " + value);
         }
     }
 }
