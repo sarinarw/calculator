@@ -40,15 +40,6 @@ public class CalculatorTest {
         calculator.calculate();
     }
 
-    @Test
-    public void testSetters() {
-        Calculator calculator = new Calculator("1", "2", "-");
-        calculator.setLeft("2");
-        calculator.setRight("1");
-        calculator.calculate();
-        assert(1 == calculator.getResult());
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidOperator() {
         new Calculator("9", "1", "#");
