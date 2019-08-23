@@ -5,6 +5,21 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
+/**
+ * Calculator class to satisfy part 2 requirements and then some.
+ *
+ * The class takes an equation, replaces -- with + and - with +- (ridding of the entire need to know what the subtraction symbol is),
+ * and then iterates from left to right looking for multiplication or division and replacing those pieces in the string with the
+ * operation's result.
+ *
+ * Then, it does it one more time but for addition (remember subtraction isn't even a thing anymore due to the initial replacements),
+ * in order to satisfy the order of operations.
+ *
+ * NOTES:
+ * Multi-operation equations are supported: 1+2*3/4
+ * Decimal numbers are supported
+ * Numbers with 'E' (parsable by Double) are supported
+ */
 public class OptimizedCalculator {
 
     int MAX_HISTORY = 10;
@@ -47,12 +62,7 @@ public class OptimizedCalculator {
         }
 
         // do the actual processing of the equation
-        Double result = calculateHelperV2(equation);
-        if (result == null) {
-            throw new IllegalArgumentException("Could not produce a result for the given equation: " + equation);
-        }
-
-        currentResult = result;
+        currentResult = calculateHelperV2(equation);
     }
 
     private Double calculateHelperV2(String equation) {
@@ -60,6 +70,7 @@ public class OptimizedCalculator {
         if (equation.length() == 0) {
             throw new IllegalArgumentException("Equation string must not be empty");
         }
+
         // replace subtraction symbols by saying we are adding the left value to a negative right value
         // and double subtraction symbols with addition
         // do not replace if the subtraction symbol is proceeds another operator already
@@ -81,7 +92,9 @@ public class OptimizedCalculator {
             updatedEquation.append(equation.charAt(i));
         }
 
-        updatedEquation.append(equation.charAt(equation.length() - 1));
+        if (equation.length() > 1) {
+            updatedEquation.append(equation.charAt(equation.length() - 1));
+        }
 
         equation = updatedEquation.toString();
 
@@ -162,12 +175,6 @@ public class OptimizedCalculator {
                         throw new ArithmeticException(left + " and " + right + " cannot be added as it causes overflow");
                     }
                     break;
-                case SUBTRACT: // this should never actually be hit because we replaced all - with +- and -- with +
-                    result = left - right;
-                    if (result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY) {
-                        throw new ArithmeticException(left + " cannot subtract " + right + " as it causes overflow");
-                    }
-                    break;
                 case MULTIPLY:
                     result = left * right;
                     if (result / right != left) {
@@ -183,7 +190,7 @@ public class OptimizedCalculator {
                         throw new ArithmeticException(left + " cannot be divided by " + right + " as it causes overflow");
                     }
                     break;
-                default:
+                default: // if we get here and the Operation is SUBTRACT, we messed up replacing those with addition symbols somewhere
                     throw new IllegalArgumentException("Calculations not supported on operator: " + op);
             }
             return result;
@@ -199,7 +206,7 @@ public class OptimizedCalculator {
         }
 
         if (index > historicalCalculations.size()) {
-            throw new IllegalArgumentException("There is not yet " + index + " number of past calculations");
+            return null;
         }
 
         return historicalCalculations.get(historicalCalculations.size() - index);
